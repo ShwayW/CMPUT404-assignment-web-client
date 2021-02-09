@@ -209,8 +209,8 @@ class TestHTTPClient(unittest.TestCase):
     # consider disabling this test until everything else works
     
     def testInternetGets(self):
-        #Test HTTP Get in the wild, these webservers are far less
-           #forgiving
+        '''Test HTTP Get in the wild, these webservers are far less
+           forgiving'''
         MyHTTPHandler.get = echo_path_get
         http = httpclass.HTTPClient()        
         urls = [
