@@ -18,6 +18,10 @@
 # Write your own HTTP GET and POST
 # The point is to understand what you have to send and get experience with it
 
+# Author: Shuwei Wang
+# CCID: shuwei4
+# student #: 1576835
+
 import sys
 import socket
 import re
@@ -41,13 +45,13 @@ class HTTPClient(object):
         return None
 
     def get_code(self, data):
-        return None
+        return int(self.get_headers(data).split("\r\n")[0].split()[1])
 
     def get_headers(self,data):
-        return None
+        return data.split("\r\n\r\n")[0] + "\r\n"
 
     def get_body(self, data):
-        return None
+        return data.split("\r\n\r\n")[1]
     
     def sendall(self, data):
         self.socket.sendall(data.encode('utf-8'))
@@ -70,11 +74,75 @@ class HTTPClient(object):
     def GET(self, url, args=None):
         code = 500
         body = ""
+        parseResult = urllib.parse.urlparse(url)
+        scheme = parseResult.scheme
+        hostname = parseResult.hostname
+        netloc = parseResult.netloc
+        port = parseResult.port
+        # default port is 80 for http and 443 for https
+        if port is None:
+            if scheme == "http": port = 80
+            elif scheme == "https": port = 443
+        path = parseResult.path if parseResult.path != "" else "/"
+        content = ""
+        # the request body:
+        if args is not None:
+            for i in args:
+                content += "%s=%s&" % (i, args[i])
+            content = content[:-1]
+        # the request headers:
+        data = "GET %s HTTP/1.1\r\nHost: %s\r\nAccept: */*\r\n" % (path, netloc)
+        data += "Content-Length: %d\r\n" % (sys.getsizeof(content) - sys.getsizeof(""))
+        data += "Accept-Language: en-US\r\n"
+        data += "Connection: keep-alive\r\n"
+        data += "Upgrade-Insecure-Requests: 1\r\n"
+        data += "DNT: 1\r\n"
+        data += "\r\n"
+        data += content
+        # connect and send immediately
+        self.connect(hostname, port)
+        self.sendall(data)
+        received_data = self.recvall(self.socket)
+        self.close()
+        code = self.get_code(received_data)
+        body = self.get_body(received_data)
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
         code = 500
         body = ""
+        parseResult = urllib.parse.urlparse(url)
+        scheme = parseResult.scheme
+        hostname = parseResult.hostname
+        netloc = parseResult.netloc
+        port = parseResult.port
+        # default port is 80 for http and 443 for https
+        if port is None:
+            if scheme == "http": port = 80
+            elif scheme == "https": port = 443
+        path = parseResult.path if parseResult.path != "" else "/"
+        content = ""
+        # the request body:
+        if args is not None:
+            for i in args:
+                content += "%s=%s&" % (i, args[i])
+            content = content[:-1]
+        # the request headers:
+        data = "POST %s HTTP/1.1\r\nHost: %s\r\nAccept: */*\r\n" % (path, netloc)
+        data += "Content-Length: %d\r\n" % (sys.getsizeof(content) - sys.getsizeof(""))
+        data += "Accept-Language: en-US\r\n"
+        data += "Connection: keep-alive\r\n"
+        data += "Upgrade-Insecure-Requests: 1\r\n"
+        data += "DNT: 1\r\n"
+        data += "\r\n"
+        data += content
+        # connect and send immediately
+        self.connect(hostname, port)
+        self.sendall(data)
+        received_data = self.recvall(self.socket)
+        self.close()
+        code = self.get_code(received_data)
+        body = self.get_body(received_data)
         return HTTPResponse(code, body)
 
     def command(self, url, command="GET", args=None):
