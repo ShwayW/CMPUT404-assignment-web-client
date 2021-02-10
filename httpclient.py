@@ -36,6 +36,9 @@ class HTTPResponse(object):
         self.code = code
         self.body = body
 
+    def __str__(self):
+        return "code: %d\r\nbody: %s\r\n" % (self.code, self.body)
+
 class HTTPClient(object):
     #def get_host_port(self,url):
 
@@ -75,7 +78,8 @@ class HTTPClient(object):
         code = 500
         body = ""
         parseResult = urllib.parse.urlparse(url)
-        scheme = parseResult.scheme
+        # default scheme is http
+        scheme = parseResult.scheme if parseResult.scheme != "" else "http"
         hostname = parseResult.hostname
         netloc = parseResult.netloc
         port = parseResult.port
