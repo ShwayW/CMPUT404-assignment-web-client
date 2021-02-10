@@ -98,7 +98,7 @@ class HTTPClient(object):
         data = "GET %s HTTP/1.1\r\nHost: %s\r\nAccept: */*\r\n" % (path, netloc)
         data += "Content-Length: %d\r\n" % (sys.getsizeof(content) - sys.getsizeof(""))
         data += "Accept-Language: en-US\r\n"
-        data += "Connection: keep-alive\r\n"
+        data += "Connection: close\r\n"
         data += "Upgrade-Insecure-Requests: 1\r\n"
         data += "DNT: 1\r\n"
         data += "\r\n"
@@ -135,7 +135,7 @@ class HTTPClient(object):
         data = "POST %s HTTP/1.1\r\nHost: %s\r\nAccept: */*\r\n" % (path, netloc)
         data += "Content-Length: %d\r\n" % (sys.getsizeof(content) - sys.getsizeof(""))
         data += "Accept-Language: en-US\r\n"
-        data += "Connection: keep-alive\r\n"
+        data += "Connection: close\r\n"
         data += "Upgrade-Insecure-Requests: 1\r\n"
         data += "DNT: 1\r\n"
         data += "\r\n"
